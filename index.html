@@ -3,22 +3,79 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <style>
+    body {
+      background-color: rgb(159, 213, 252);
+    }
+
+    div {
+      background-color: white;
+      margin-top: 5px;
+      margin-left: auto ;
+      margin-right: auto ;
+      text-align: left;
+      width: 400px;
+      height: auto;
+      border-radius: 5px;
+      padding: 5px;
+    }
+
+    p#time {
+      text-align: right;
+      margin: 20px 5px 0px 0px;
+      font-size: 12px;
+      color: rgb(153, 153, 153);
+    }
+
+    </style>
   </head>
   <body>
+
+
     <script>
+      var getTimeStamp = function(){
+          var now = new Date().toString().split(' ');
+          var day = 0;
+          var month = 1;
+          var date = 2;
+          var year = 3;
+          var time = 4;
+
+          var timestamp = now[time] + " - " + now[day] + " " + now[month] + " " + now[date] + ", " + now[year]
+
+          return timestamp;
+        };
 
       $(document).ready(function(){
         var $body = $('body');
         $body.html('');
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
+        var tweetIt = function(){
+          var index = streams.home.length - 1;
+          while(index >= 0){
+            var tweet = streams.home[index];
+            var $tweet = $('<div></div>');
+            var timestamp = getTimeStamp();
+            $tweet.text('@' + tweet.user + ': ' + tweet.message);
+            $tweet.data("timestamp", timestamp);
+            $tweet.appendTo($body);
+
+            $('div').last().append('<p id="time">'+timestamp+'</p>')
+
+
+            index -= 1;
+          }
         }
+
+        
+        var tweetingIt = setInterval(function(){
+            $body.html('');
+            tweetIt();
+          },1000);
+        
+        setTimeout(function(){
+          clearInterval(tweetingIt);
+        }, 5000)
 
       });
 
