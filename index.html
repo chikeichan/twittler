@@ -5,8 +5,13 @@
     <script src="data_generator.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
     <style>
+
     body {
       background-color: rgb(159, 213, 252);
+    }
+
+    #form {
+      display: none;
     }
 
     div.message {
@@ -21,6 +26,17 @@
       padding: 5px;
       box-shadow: 2px 2px rgb(76, 145, 203);
       display: none;
+    }
+
+    #tweetbox {
+      background-color: rgb(217, 238, 255);
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      width: 80%;
+      height: 100px;
+      border: 2px solid grey;
+      border-radius: 5px;
     }
 
     div.filter {
@@ -68,6 +84,10 @@
       margin: 20px 5px 0px 0px;
       font-size: 12px;
       color: rgb(153, 153, 153);
+    }
+
+    .highlighted {
+      color: rgb(96, 153, 255);
     }
 
     div.title {
@@ -121,7 +141,12 @@
       border-left:8px solid red;
     }
 
-
+    p#add {
+      display: inline-block;
+      float: right;
+      margin-top: 8px;
+      text-shadow: -2px -2px rgb(107, 107, 107), 2px -2px rgb(107, 107, 107), -2px 2px rgb(107, 107, 107), 2px 2px rgb(107, 107, 107);
+    }
 
 
 
@@ -129,9 +154,10 @@
   </head>
   <body>
 
-    <div class="title">
-      Twittler
+    <div class="title">Twittler
+      <p id='add'>+</p>
       <div class='pause'></div>
+      
     </div>
 
     <p class="main"></p>
@@ -277,7 +303,21 @@
           $(this).text(timestamp);
         });
 
+        $('.title').on('mouseenter','#add',function(){
+          $(this).addClass('highlighted');
+        });
 
+        $('.title').on('click','#add',function(){
+          
+            $(this).closest('.title').append('<form id="form"><textarea id="tweetbox"></textarea></form>');
+            $(this).addClass('clicked');
+            $('.title').find('#form').show('slow');
+          
+        });
+
+        $('.title').on('mouseleave','#add',function(){
+          $(this).removeClass('highlighted');
+        });
 
       });
 
