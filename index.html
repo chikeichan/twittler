@@ -18,6 +18,7 @@
       height: auto;
       border-radius: 5px;
       padding: 5px;
+      box-shadow: 2px 2px rgb(76, 145, 203);
     }
 
     p#time {
@@ -27,9 +28,31 @@
       color: rgb(153, 153, 153);
     }
 
+    p.title {
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: -10px;
+      margin-top: -10px;
+      text-align: left;
+      width: 400px;
+      padding: 5px;
+      font-size: 50px;
+      color: rgb(255, 255, 255);
+      font-family: fantasy;
+      text-shadow: -2px -2px rgb(107, 107, 107),
+                    2px -2px rgb(107, 107, 107),
+                   -2px 2px rgb(107, 107, 107),
+                    2px 2px rgb(107, 107, 107);
+
+    }
+
     </style>
   </head>
   <body>
+
+    <p class="title">Twittler</p>
+
+    <p class="main"></p>
 
 
     <script>
@@ -47,8 +70,12 @@
         };
 
       $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+        var $body = $('.main');
+        //$body.html('');
+
+
+
+        var oldTweets = -1;
 
         var tweetIt = function(){
           var index = streams.home.length - 1;
@@ -64,13 +91,30 @@
 
 
             index -= 1;
+            oldTweets++
           }
         }
 
+        tweetIt();
         
         var tweetingIt = setInterval(function(){
-            $body.html('');
-            tweetIt();
+            var index = streams.home.length-1;
+            if(index > oldTweets){
+              for(var i = oldTweets+1; i<=index; i++){
+                var tweet = streams.home[index];
+                var $tweet = $('<div></div>');
+                var timestamp = getTimeStamp();
+                $tweet.text('@' + tweet.user + ': ' + tweet.message);
+                $tweet.data("timestamp", timestamp);
+                $tweet.prependTo($body);
+
+                $('div').first().append('<p id="time">'+timestamp+'</p>')
+
+
+                index -= 1;
+                oldTweets++;
+              }
+            }
           },1000);
         
         setTimeout(function(){
