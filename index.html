@@ -8,17 +8,58 @@
       background-color: rgb(159, 213, 252);
     }
 
-    div {
+    div.message {
       background-color: white;
       margin-top: 5px;
       margin-left: auto ;
       margin-right: auto ;
       text-align: left;
-      width: 50%;
+      width: 60%;
       height: auto;
       border-radius: 5px;
       padding: 5px;
       box-shadow: 2px 2px rgb(76, 145, 203);
+      display: none;
+    }
+
+    div.filter {
+      background-color: white;
+      margin-top: 5px;
+      margin-left: auto ;
+      margin-right: auto ;
+      text-align: left;
+      width: 60%;
+      height: auto;
+      border-radius: 5px;
+      padding: 5px;
+      box-shadow: 2px 2px rgb(76, 145, 203);
+      display: none;
+    }
+
+    p#filteredname {
+      display: block;
+      font-family: tahoma;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    p#filter {
+      font-family: arial;
+      font-size:12px;
+      margin-left: 15px;
+      display: inline-block;
+      margin-top: -5px;
+      width: 60%;
+    }
+
+    p#filteredtime {
+      font-family: arial;
+      margin-right: 5px;
+      display: initial;
+      font-size: 10px;
+      color: rgb(153, 153, 153);
+      float: right;
+      margin-top: initial;
     }
 
     p#time {
@@ -28,13 +69,13 @@
       color: rgb(153, 153, 153);
     }
 
-    p.title {
+    div.title {
       margin-left: auto;
       margin-right: auto;
       margin-bottom: -10px;
       margin-top: -5px;
       text-align: left;
-      width: 50%;
+      width: 60%;
       padding: 5px;
       font-size: 50px;
       color: rgb(255, 255, 255);
@@ -43,25 +84,61 @@
                     2px -2px rgb(107, 107, 107),
                    -2px 2px rgb(107, 107, 107),
                     2px 2px rgb(107, 107, 107);
-
     }
 
-    p#username, p#msg {
+    p#username {
       display: inline-block;
+      font-family: tahoma;
+      font-weight: bold;
+      text-decoration: underline;
     }
+
+    p#msg{
+      display: inline-block;
+      font-family: arial;
+      font-size:14px;
+    }
+
+    .play {
+      height: 0px;
+      width: 0px;
+      display: inline-block;
+      margin-top: 5px;
+      margin-left: 20px;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent; 
+      border-left:20px solid lime; 
+    }
+
+    .pause {
+      height: 20px;
+      width: 4px;
+      display: inline-block;
+      margin-top: 5px;
+      margin-left: 20px;
+      border-right:8px solid red; 
+      border-left:8px solid red;
+    }
+
+
+
+
 
     </style>
   </head>
   <body>
 
-    <p class="title">Twittler</p>
+    <div class="title">
+      Twittler
+      <div class='pause'></div>
+    </div>
 
     <p class="main"></p>
 
 
     <script>
-      var getTimeStamp = function(){
-          var now = new Date().toString().split(' ');
+      var getTimeStamp = function(x){
+          var now = x['created_at'].toString().split(' ');
           var day = 0;
           var month = 1;
           var date = 2;
@@ -75,61 +152,97 @@
 
       $(document).ready(function(){
         var $body = $('.main');
-        //$body.html('');
-
-
-
+        
         var oldTweets = -1;
 
-        var tweetIt = function(){
+        var tweetInitialize = function(){
           var index = streams.home.length - 1;
           while(index >= 0){
             var tweet = streams.home[index];
-            //var $tweet = $('<div></div>');
-            var timestamp = getTimeStamp();
-            //$tweet.text('@' + tweet.user + ': ' + tweet.message);
-            //$tweet.data("timestamp", timestamp);
-            //$tweet.appendTo($body);
-
-            var tweetmsg = "<div class='message' id='"+index+"'>@<p id='username'>"+tweet.user+"</p>: <p id='msg'>"+tweet.message+"</p>";
+            var timestamp = getTimeStamp(tweet);
+            
+            var tweetmsg = "<div class='message' id='"+index+"'>@<p id='username' class='"+tweet.user+"'>"+tweet.user+"</p>: <p id='msg'>"+tweet.message+"</p>";
             $body.append(tweetmsg);
 
-            $('div').last().append('<p id="time">'+timestamp+'</p>')
+            $('.message').last().append('<p id="time">'+timestamp+'</p>')
 
 
             index -= 1;
             oldTweets++
+            $('.message').fadeIn('slow');
           }
         }
 
-        tweetIt();
+        tweetInitialize();
         
-        var tweetingIt = setInterval(function(){
+        var tweetIt = function(){
             var index = streams.home.length-1;
             if(index > oldTweets){
               for(var i = oldTweets+1; i<=index; i++){
                 var tweet = streams.home[index];
-                //var $tweet = $('<div></div>');
-                var timestamp = getTimeStamp();
-                //$tweet.text('@' + tweet.user + ': ' + tweet.message + ":" + index);
-                //$tweet.data("timestamp", timestamp);
-                //$tweet.prependTo($body);
+                var timestamp = getTimeStamp(tweet);
 
                 var tweetmsg = "<div class='message' id='"+index+"'>@<p id='username'>"+tweet.user+"</p>: <p id='msg'>"+tweet.message+"</p>";
                 $body.prepend(tweetmsg);
 
-                $('div').first().append('<p id="time">'+timestamp+'</p>')
-
+                $('.message').first().append('<p id="time">'+timestamp+'</p>');
 
                 index -= 1;
                 oldTweets++;
               }
             }
-          },200);
-        
-        setTimeout(function(){
+            $('.message').first().show('slow');
+            $('.main').find('.message').slice(10).fadeOut('slow');
+          };
+
+        var tweetingIt = setInterval(tweetIt,200);
+
+        $('.main').on('dblclick','.message', function(){
+          $(this).fadeOut('slow',function(){
+            $(this).hide();
+          });
+        });
+
+        $('.title').on('click','.pause',function(){
+          $(this).removeClass('pause');
+          $(this).addClass('play');
           clearInterval(tweetingIt);
-        }, 5000)
+        });
+
+        $('.title').on('click','.play',function(){
+          $(this).removeClass('play');
+          $(this).addClass('pause');
+          $('.filter').fadeOut('slow',function(){
+            $('.filter').remove();
+          });
+          tweetingIt = setInterval(tweetIt,200);
+        });
+
+        $('.main').on('click','#username',function(){
+          $('div>div').removeClass('pause');
+          $('div>div').addClass('play');
+          clearInterval(tweetingIt);
+
+
+          var username = $(this).text();
+          var tweets = streams.users[username];
+
+
+          $('.main').find('.message').fadeOut('slow');
+          $('.main').prepend("<div class='filter'></div>");
+          
+          $('.filter').prepend('<p id="filteredname">@'+username+'\'s tweets:</p>');
+
+          for (var i=tweets.length-1; i>=0;i--){
+            var timestamp = '<p id="filteredtime">At '+getTimeStamp(tweets[i])+'</p><br>';
+            var messages = '<p id="filter">'+tweets[i].message+"</p>";
+            $('.filter').append(messages + timestamp);
+          }
+
+          $('.filter').show('slow');
+
+        });
+
 
       });
 
