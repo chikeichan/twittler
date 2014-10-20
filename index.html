@@ -3,6 +3,7 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
     <style>
     body {
       background-color: rgb(159, 213, 252);
@@ -138,14 +139,9 @@
 
     <script>
       var getTimeStamp = function(x){
-          var now = x['created_at'].toString().split(' ');
-          var day = 0;
-          var month = 1;
-          var date = 2;
-          var year = 3;
-          var time = 4;
-
-          var timestamp = now[time] + " - " + now[day] + " " + now[month] + " " + now[date] + ", " + now[year]
+          var now = x['created_at'];
+          //var timestamp = moment(now).format('LLL');
+          var timestamp = moment(now).fromNow();
 
           return timestamp;
         };
@@ -192,14 +188,25 @@
               }
             }
             $('.message').first().show('slow');
-            $('.main').find('.message').slice(10).fadeOut('slow');
+            $('.main').find('.message').slice(10).fadeOut('slow',function(){
+              $(this).remove();
+            });
           };
 
         var tweetingIt = setInterval(tweetIt,200);
 
         $('.main').on('dblclick','.message', function(){
           $(this).fadeOut('slow',function(){
-            $(this).hide();
+            $(this).remove();
+          });
+        });
+
+        $('.main').on('dblclick','.filter', function(){
+          $(this).fadeOut('slow',function(){
+            $('div>div').removeClass('play');
+            $('div>div').addClass('pause');
+            tweetingIt = setInterval(tweetIt,200);
+            $(this).remove();
           });
         });
 
@@ -234,14 +241,42 @@
           $('.filter').prepend('<p id="filteredname">@'+username+'\'s tweets:</p>');
 
           for (var i=tweets.length-1; i>=0;i--){
-            var timestamp = '<p id="filteredtime">At '+getTimeStamp(tweets[i])+'</p><br>';
+            var fulltime = moment(tweets[i].created_at).format('LLL');
+            var timestamp = '<p id="filteredtime" class="'+fulltime+'">'+getTimeStamp(tweets[i])+'</p><br>';
+            
             var messages = '<p id="filter">'+tweets[i].message+"</p>";
             $('.filter').append(messages + timestamp);
           }
 
+
           $('.filter').show('slow');
 
         });
+
+        $('.main').on('mouseenter','#time', function(){
+          var index = $(this).closest('.message').attr('id');
+          var tweet = streams.home[index];
+          var timestamp = moment(tweet.created_at).format('LLL');
+          $(this).text(timestamp);
+        });
+
+        $('.main').on('mouseleave','#time', function(){
+          var index = $(this).closest('.message').attr('id');
+          var tweet = streams.home[index];
+          var timestamp = getTimeStamp(tweet);
+          $(this).text(timestamp);
+        });
+
+        $('.main').on('mouseenter','#filteredtime', function(){
+          var timestamp = $(this).attr('class');
+          $(this).text(timestamp);
+        });
+
+        $('.main').on('mouseleave','#filteredtime', function(){
+          var timestamp = moment($(this).text()).fromNow();
+          $(this).text(timestamp);
+        });
+
 
 
       });
