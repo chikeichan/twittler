@@ -12,6 +12,10 @@
 
     #form {
       display: none;
+      background-color: rgba(255, 255, 255, 0.47);
+      padding: 1px 20px 20px 20px;
+      border-radius: 5px;
+      box-shadow: 2px 2px rgba(0, 0, 0, 0.17);
     }
 
     div.message {
@@ -28,15 +32,62 @@
       display: none;
     }
 
+    div.pmessage {
+      background-color: rgb(254, 255, 206);
+      margin-top: 10px;
+      margin-left: auto ;
+      margin-right: auto ;
+      text-align: left;
+      width: 60%;
+      height: auto;
+      border-radius: 5px;
+      padding: 5px;
+      box-shadow: 2px 2px rgb(76, 145, 203);
+      display: none;
+    }
+
     #tweetbox {
       background-color: rgb(217, 238, 255);
       margin-left: auto;
       margin-right: auto;
       text-align: left;
-      width: 80%;
+      width: 95%;
       height: 100px;
       border: 2px solid grey;
       border-radius: 5px;
+      padding: 5px;
+      color: grey;
+      font-family: tahoma;
+    }
+
+    #tweetname {
+      background-color: rgb(217, 238, 255);
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 15px;
+      text-align: left;
+      height: 25px;
+      border: 2px solid grey;
+      border-radius: 5px;
+      padding: 5px;
+      color: grey;
+      font-family: tahoma;
+    }
+
+    #visitor {
+      margin-bottom: 5px;
+      margin-left: -5px;
+      text-align: left;
+      height: 40px;
+      padding: 5px;
+      color: black;
+      font-family: tahoma;
+      font-size: 25px;
+      font-weight: bold;
+      text-shadow: 0px 0px rgb(107, 107, 107),
+                   0px 0px rgb(107, 107, 107),
+                   0px 0px rgb(107, 107, 107),
+                   0px 0px rgb(107, 107, 107);
     }
 
     div.filter {
@@ -90,6 +141,10 @@
       color: rgb(96, 153, 255);
     }
 
+    .clicked {
+      color: rgb(96, 153, 255);
+    }
+
     div.title {
       margin-left: auto;
       margin-right: auto;
@@ -124,21 +179,23 @@
       height: 0px;
       width: 0px;
       display: inline-block;
-      margin-top: 5px;
-      margin-left: 20px;
+      margin-top: 28px;
       border-top: 10px solid transparent;
       border-bottom: 10px solid transparent; 
-      border-left:20px solid lime; 
+      border-left:20px solid rgb(96, 255, 96);
+      float: right;
+      margin-right: 15px;
     }
 
     .pause {
       height: 20px;
       width: 4px;
       display: inline-block;
-      margin-top: 5px;
-      margin-left: 20px;
-      border-right:8px solid red; 
-      border-left:8px solid red;
+      margin-top: 28px;
+      border-right:8px solid rgb(255, 73, 73); 
+      border-left:8px solid rgb(255, 73, 73);
+      float: right;
+      margin-right: 15px;
     }
 
     p#add {
@@ -148,7 +205,22 @@
       text-shadow: -2px -2px rgb(107, 107, 107), 2px -2px rgb(107, 107, 107), -2px 2px rgb(107, 107, 107), 2px 2px rgb(107, 107, 107);
     }
 
+    p#preview, p#discard, p#tweet {
+      display: inline-block;
+      margin: 0px 1px 0px 1px;
+      font-size: 25px;
+      text-shadow: -1px -1px rgb(107, 107, 107),
+                    1px -1px rgb(107, 107, 107),
+                   -1px 1px rgb(107, 107, 107),
+                    1px 1px rgb(107, 107, 107);
 
+    }
+
+    .buttons {
+      text-align: right;
+      margin-top: -20px;
+      margin-bottom: -15px;
+    }
 
     </style>
   </head>
@@ -157,6 +229,16 @@
     <div class="title">Twittler
       <p id='add'>+</p>
       <div class='pause'></div>
+      <form id="form">
+        <input type='text' value='Your name here' id='tweetname'>
+        <textarea id="tweetbox">Your tweets here</textarea>
+        <div class='buttons'>
+          <p id='preview'>Preview</p>
+          <p id='discard'>Discard</p>
+          <p id='tweet'>Tweet</p>
+        </div>
+      </form>
+      
       
     </div>
 
@@ -164,6 +246,8 @@
 
 
     <script>
+      var visitor = '';
+      var message = '';
       var getTimeStamp = function(x){
           var now = x['created_at'];
           //var timestamp = moment(now).format('LLL');
@@ -219,7 +303,7 @@
             });
           };
 
-        var tweetingIt = setInterval(tweetIt,200);
+        var tweetingIt = setInterval(tweetIt,100);
 
         $('.main').on('dblclick','.message', function(){
           $(this).fadeOut('slow',function(){
@@ -231,7 +315,7 @@
           $(this).fadeOut('slow',function(){
             $('div>div').removeClass('play');
             $('div>div').addClass('pause');
-            tweetingIt = setInterval(tweetIt,200);
+            tweetingIt = setInterval(tweetIt,100);
             $(this).remove();
           });
         });
@@ -248,7 +332,7 @@
           $('.filter').fadeOut('slow',function(){
             $('.filter').remove();
           });
-          tweetingIt = setInterval(tweetIt,200);
+          tweetingIt = setInterval(tweetIt,100);
         });
 
         $('.main').on('click','#username',function(){
@@ -269,14 +353,11 @@
           for (var i=tweets.length-1; i>=0;i--){
             var fulltime = moment(tweets[i].created_at).format('LLL');
             var timestamp = '<p id="filteredtime" class="'+fulltime+'">'+getTimeStamp(tweets[i])+'</p><br>';
-            
             var messages = '<p id="filter">'+tweets[i].message+"</p>";
             $('.filter').append(messages + timestamp);
           }
 
-
           $('.filter').show('slow');
-
         });
 
         $('.main').on('mouseenter','#time', function(){
@@ -293,6 +374,19 @@
           $(this).text(timestamp);
         });
 
+        //
+        $('body').on('mouseenter', '.pmessage > #time', function(){
+          var timestamp = moment().format('LLL');
+          $(this).text(timestamp);
+        });
+
+        $('body').on('mouseleave', '.pmessage > #time', function(){
+          var timestamp = moment().fromNow();
+          $(this).text(timestamp);
+        });
+
+        //
+
         $('.main').on('mouseenter','#filteredtime', function(){
           var timestamp = $(this).attr('class');
           $(this).text(timestamp);
@@ -303,21 +397,115 @@
           $(this).text(timestamp);
         });
 
-        $('.title').on('mouseenter','#add',function(){
+        $('.title').on('mouseenter','#add,#preview,#discard,#tweet',function(){
           $(this).addClass('highlighted');
         });
 
         $('.title').on('click','#add',function(){
-          
-            $(this).closest('.title').append('<form id="form"><textarea id="tweetbox"></textarea></form>');
-            $(this).addClass('clicked');
-            $('.title').find('#form').show('slow');
-          
+            $(this).toggleClass('clicked');
+            $('.title').find('#form').toggle('slow');
         });
 
-        $('.title').on('mouseleave','#add',function(){
+        $('.title').on('mouseleave','#add,#preview,#discard,#tweet',function(){
           $(this).removeClass('highlighted');
         });
+
+        $('#tweetname').on('focus',function(){
+          $(this).val('');
+        });
+
+        $('#tweetname').on('blur',function(){
+          if($(this).val()!== ''){
+            visitor = $(this).val();
+            $(this).after('<p id="visitor">'+visitor+'</p>');
+            $(this).fadeOut(0);
+          }
+        });
+
+        $('.title').on('click','#visitor',function(){
+          if(!$('#preview').hasClass('clicked')){
+            $('#tweetname').fadeIn(0);
+            visitor = '';
+            $(this).remove();
+          }
+        });
+
+        $('#tweetbox').on('focus',function(){
+          $(this).val('');
+          message = '';
+        });
+
+        $('#tweetbox').on('blur',function(){
+          if($(this).val()!== ''){
+            message = $(this).val();
+          }
+        });
+
+        $('#tweet').on('click', function(){
+          if(visitor && message){
+            if(!streams.users[visitor]) {
+              streams.users[visitor] = [];
+            }
+            writeTweet(message);
+            $('#tweetbox').val('Your tweets here');
+            message = '';
+            $('#preview').removeClass('clicked');
+            $('#tweetbox').attr('disabled',false);
+            $('.pmessage').fadeOut('slow', function(){
+              $(this).remove();
+            });
+          } else if (!visitor) {
+            shake('#tweetname', 3, 25);
+          } else if (!message) {
+            shake('#tweetbox', 3, 25);
+          }
+        });
+
+        var shake = function(target, times, speed) {
+          for (var i=0; i<times; i++) {
+            $(target).animate({'margin-left': '3px', 'margin-right': '-3px'},speed);
+            $(target).animate({'margin-left': '-3px', 'margin-right': '3px'},speed);
+            $(target).animate({'margin-left': '0px', 'margin-right': '0px'},speed);
+          }
+        }
+
+        $('#discard').on('click',function(){
+          shake('#form', 3, 25);
+          $('#preview').removeClass('clicked');
+          $('.pmessage').fadeOut('slow', function(){
+              $(this).remove();
+            });
+          $('#tweetbox').val('Your tweets here').attr('disabled',false);
+          message = '';
+          $('#tweetname').val('Your name here');
+          $('#visitor').remove();
+          $('#tweetname').fadeIn(0);
+          visitor = '';
+        });
+
+        $('#preview').on('click',function(){
+          if(!$(this).hasClass('clicked') && visitor && message) {
+            var timestamp = moment().fromNow();
+            var tweetmsg = "<div class='pmessage'>@<p id='username'>"+visitor+"</p>: <p id='msg'>"+message+"</p>";
+            $('.main').before(tweetmsg);
+            $('.pmessage').append('<p id="time">'+timestamp+'</p>');
+            $('.pmessage').fadeIn('slow');
+            $(this).addClass('clicked');
+            $('#tweetbox').attr('disabled', true);
+          } else if ($(this).hasClass('clicked')) {
+            $(this).removeClass('clicked');
+            $('.pmessage').fadeOut('slow', function(){
+              $(this).remove();
+            });
+            $('#tweetbox').attr('disabled', false);
+          } else if (!visitor) {
+            shake('#tweetname', 3, 25);
+          } else if (!message) {
+            shake('#tweetbox', 3, 25);
+          } 
+
+        });
+
 
       });
 
